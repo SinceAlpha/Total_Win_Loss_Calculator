@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
 
         # If the user selected a file name, create the CSV file with the headers
         if file_name:
-            headers = ['Game', 'Bet Amount', 'Win Amount', 'Date and Time']
+            headers = ['Game', 'Bet Amount', 'Win/Loss Amount', 'Date and Time']
             df = pd.DataFrame(columns=headers)
             df.to_csv(file_name, index=False)
 
@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(game_input)
         layout.addWidget(QLabel('Bet Amount:'))
         layout.addWidget(bet_amount_input)
-        layout.addWidget(QLabel('Win Amount:'))
+        layout.addWidget(QLabel('Win/Loss Amount:'))
         layout.addWidget(win_amount_input)
         layout.addLayout(date_time_layout)
 
@@ -174,7 +174,7 @@ class MainWindow(QMainWindow):
 
     def add_entry_confirm(self, game, bet_amount, win_amount, date_time):
         # Create a dataframe with the data to add to the CSV
-        data = {'Game': game, 'Bet Amount': bet_amount, 'Win Amount': win_amount, 'Date and Time': date_time}
+        data = {'Game': game, 'Bet Amount': bet_amount, 'Win/loss Amount': win_amount, 'Date and Time': date_time}
         df = pd.DataFrame(data, index=[0])
         df = df.append(df, ignore_index=True)
 
