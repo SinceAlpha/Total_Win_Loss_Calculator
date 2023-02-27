@@ -7,3 +7,5 @@
 ### 1. if you have not used the program before or would like to make a new file click "Create csv"
 ### 2. if you have already made a file and would like to add a new entry you must click "Open csv" before clicking "Add entry"
 ### 3. you may put negative number in the win/loss amount box
+
+

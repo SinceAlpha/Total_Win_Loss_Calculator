@@ -1,10 +1,11 @@
 #Author Darwin Borsato
-#Version 2.0.02
+#Version 2.0.03
 import os.path
 from datetime import datetime
 import sys
 from PyQt5.QtWidgets import *
 import easygui
+import pandas as pd
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -25,6 +26,11 @@ class MainWindow(QMainWindow):
         open_csv = QPushButton('Open CSV', self)
         open_csv.clicked.connect(self.open_csv)
         layout.addWidget(open_csv)
+
+        # Create the "Display Wins/Losses" button and connect it to the buyin_amount function
+        display_results = QPushButton('Display Wins/Losses', self)
+        display_results.clicked.connect(self.display_results)
+        layout.addWidget(display_results)
 
         # Create the "Buyin Amount" button and connect it to the buyin_amount function
         buyin_button = QPushButton('Update Buy-ins', self)
@@ -82,6 +88,46 @@ class MainWindow(QMainWindow):
         name_file = os.path.basename(name_file)
         print(name_file)
 
+    def display_results(filename):
+        # Read CSV file and calculate total win/loss amount
+        df = pd.read_csv(filename)
+        total_win_amount = df['Win Amount'].sum()
+        total_loss_amount = df['Bet Amount'].sum() - total_win_amount
+
+        # Calculate top 3 games played and amounts won
+        top_3_games = df.groupby(['Game'])['Win Amount'].sum().nlargest(3)
+
+        # Create table to display results
+        table = QTableWidget()
+        table.setColumnCount(2)
+        table.setRowCount(4)
+        table.setHorizontalHeaderLabels(['Category', 'Amount'])
+
+        # Add total win/loss amounts to table
+        table.setItem(0, 0, QTableWidgetItem('Total Wins'))
+        table.setItem(0, 1, QTableWidgetItem(str(total_win_amount)))
+        table.setItem(1, 0, QTableWidgetItem('Total Losses'))
+        table.setItem(1, 1, QTableWidgetItem(str(total_loss_amount)))
+        table.setItem(2, 0, QTableWidgetItem('Net Wins'))
+        table.setItem(2, 1, QTableWidgetItem(str(total_win_amount - total_loss_amount)))
+
+        # Add top 3 games and amounts won to table
+        for i, (game, amount) in enumerate(top_3_games.items(), 3):
+            table.setItem(i, 0, QTableWidgetItem(game))
+            table.setItem(i, 1, QTableWidgetItem(str(amount)))
+
+        # Set layout and show table
+        layout = QVBoxLayout()
+        layout.addWidget(table)
+        widget = QWidget()
+        widget.setLayout(layout)
+        widget.show()
+
+        # Start application event loop
+        app = QApplication([])
+        app.exec_()
+
+
     #def create_csv(self):
 
         # # Create the dataframe with the headers
@@ -111,6 +157,7 @@ class MainWindow(QMainWindow):
         # self.buyin_window.closed.connect(self.show_main_window)
 
     def add_entry(self):
+        self.open_csv()
         # Create a layout for the input fields
         layout = QVBoxLayout()
 
@@ -177,12 +224,9 @@ class MainWindow(QMainWindow):
         # Create a dataframe with the data to add to the CSV
         data = {'Game': game, 'Bet Amount': bet_amount, 'Win/loss Amount': win_amount, 'Date and Time': date_time}
         df = pd.DataFrame(data, index=[0])
-        df = df.append(df, ignore_index=True)
 
         # Append the data to the CSV file
-        # print(name_file)
-        # with open(name_file["Filename"], 'a') as f:
-        df.to_csv(name_file, header=False, index=False)
+        df.to_csv(name_file, mode='a', header=False, index=False)
         print("here")
         # Show a confirmation message
         QMessageBox.information(self, 'Message', 'Entry added to CSV file.')
