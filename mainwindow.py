@@ -1,4 +1,5 @@
 #Author Darwin Borsato
+#Version 2.0.02
 import os.path
 from datetime import datetime
 import sys

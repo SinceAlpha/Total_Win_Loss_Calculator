@@ -1,5 +1,5 @@
 #Author Darwin Borsato 2023-02-26
-#
+#Version 2.0.02
 from datetime import datetime
 import sys
 from PyQt5.QtWidgets import *
